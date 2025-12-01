@@ -11,3 +11,35 @@ services:
     command: start-dev
     volumes:
       - ./keycloak-data:/opt/keycloak/data
+
+  discovery-service:
+    build: ./discovery-service
+    ports:
+      - "8761:8761"
+
+  config-service:
+    build: ./config-service
+    ports:
+      - "8888:8888"
+    depends_on:
+      - discovery-service
+
+  gateway-service:
+    build: ./gateway-service
+    ports:
+      - "8888:8888"
+    depends_on:
+      - discovery-service
+      - config-service
+
+  keynote-service:
+    build: ./keynote-service
+    depends_on:
+      - discovery-service
+      - config-service
+
+  conference-service:
+    build: ./conference-service
+    depends_on:
+      - discovery-service
+      - config-service
